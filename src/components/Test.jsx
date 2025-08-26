@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { getProfileDetails } from '../apis/profile_details'
-import { likeActivity, unlikeActivity, getLikeCount, getLikeCounts } from '../apis/activitieslikes'
-import { postComment, deleteComment, getActivityCommentsTree } from '../apis/activitiesComments'
-import { likeComment, unlikeComment } from '../apis/activitiesCommentLikes'
+import { getNearbyUsers, updateUserLocation } from '../apis/userLocations'
+import { supabase } from '../supabaseClient'
+import { fetchActivitiesByCategoryName } from '../apis/activities'
+import { loginWithOTP, verifyOTP } from '../apis/auth'
+import { updateMood, getMoodByUserId } from '../apis/moods'
+import { fillUserName } from '../apis/profiles'
 
 export default function Test() {
   const [testResult, setTestResult] = useState(null)
@@ -41,14 +43,23 @@ export default function Test() {
         // const deletedComment = await deleteComment('581a3f15-1f77-45d2-973a-75b0575e6976', '36231020-693c-4ccc-810c-8cc7f7c4135e')
         // const commentsTree = await getActivityCommentsTree('05aa177a-277b-4c43-8979-d5695dc1565f')
         // const likeCommentResponse = await likeComment('ae580470-635b-4064-b80b-fa27d8819c54')
-        const unlikeCommentResponse = await unlikeComment('ae580470-635b-4064-b80b-fa27d8819c54')
-        
+        // const unlikeCommentResponse = await unlikeComment('ae580470-635b-4064-b80b-fa27d8819c54')
+        // const nearbyUsers = await getNearbyUsers({ lng: 121, lat: 31, radiusM: 50000, maxCount: 100 })
+        // const updatedLocation = await updateUserLocation({ lat: 31, lng: 121, accuracyM: 50, sharing: true })
+        // const fetchedActivities = await fetchActivitiesByCategoryName('Food & Dining')
+        // const otp = await loginWithOTP('yukai_luo@yahoo.com')
+        // const verifiedOtp = await verifyOTP('yukai_luo@yahoo.com', '827387')
+        // const updatedMood = await updateMood('36231020-693c-4ccc-810c-8cc7f7c4135e', 'Bored')
+        // const fetchedMood = await getMoodByUserId('36231020-693c-4cbc-810c-8cc7f7c4135e')
+        // const signUpResponse = await signUp('luoyukai2@gmail.com', 'password123')
+        const fillNameResponse = await fillUserName('KIKI', 'Luo')
+
         response = {
           status: 200,
-          data: unlikeCommentResponse,
+          data: fillNameResponse,
           timestamp: new Date().toISOString()
         }
-        setTestResult(unlikeCommentResponse)
+        setTestResult(fillNameResponse)
       } catch (err) {
         response = {
           status: err.status || 500,
