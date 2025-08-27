@@ -98,3 +98,18 @@ export async function disableLocationSharing() {
 
   return { userId: data.user_id, sharing: data.sharing === false };
 }
+
+export async function fetchUsersDistance(selfUserId, targetUsersId){
+  const { data, error } = await supabase
+    .rpc('get_user_distances', {
+      self_id: selfUserId,
+      target_ids: targetUsersId
+    });
+
+  if (error) {
+    console.error('获取距离失败:', error.message);
+    throw error;
+  }
+
+  return data;
+}

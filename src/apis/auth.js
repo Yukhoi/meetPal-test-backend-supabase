@@ -169,3 +169,14 @@ export async function fillUserName(firstName = '', lastName = '') {
   }
 }
 
+export async function fetchCurrentUser() {
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error) {
+    console.error('fetch current user failed:', error);
+    throw error;
+  }
+
+  return data?.user ?? null;
+}
+  

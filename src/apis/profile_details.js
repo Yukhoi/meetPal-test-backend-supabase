@@ -1,5 +1,6 @@
 
 import { supabase } from '../supabaseClient'
+import { fetchUserAvatarURLbyIds } from './profiles';
 
 
 // 定义多值类型字段
@@ -92,4 +93,54 @@ const multiValueTypeHandling = (fetchedData, typeArray) => {
   return resultDetails;
 };
 
-export { getProfileDetails };
+const searchUser = async (query, page = 1, pageSize = 10) => {
+
+  const profileIds = await fetchIdsByQuery(query);
+
+  const profileDetails = await fetchProfileDetailsByIdsForSearch(profileIds, page, pageSize);
+
+  const avatarUrls = await fetchUserAvatarURLbyIds(profileIds);
+
+  return profileDetails;
+}
+
+const fetchIdsByQuery = async (query) => {
+  const { data, error } = await supabase
+    .from('profiles_details')
+    .select('profile_id')
+    .in('type', ['first_name', 'last_name'])
+    .ilike('value', `%${query}%`);
+
+  if (error) {
+    throw new Error("Fetch IDs by query failed: " + error.message);
+  }
+
+  const profileIds = [...new Set(data?.map(row => row.profile_id))];
+
+  return profileIds;
+};
+
+const fetchProfileDetailsByIdsForSearch = async (profileId, page = 1, pageSize = 10) => {
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  if (profileId.length !== 0) {
+    const { data, error, count } = await supabase
+      .from('profile_details_summary_for_search')
+      .select('profile_id, props')
+      .in('profile_id', profileId)
+      .order('profile_id', { ascending: true })
+      .range(from, to);
+
+    if (error) {
+      throw new Error("Fetch profile details by IDs failed: " + error.message);
+    }
+
+    return { data, total: count ?? 0, page, pageSize };
+  } else {
+    return { data: [], total: 0, page, pageSize };
+  }
+};
+
+export { getProfileDetails,  fetchProfileDetailsByIdsForSearch };
