@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { getNearbyUsers, updateUserLocation } from '../apis/userLocations'
 import { supabase } from '../supabaseClient'
-import { fetchActivitiesByCategoryName } from '../apis/activities'
+import { fetchActivitiesByCategoryName, fetchCreatorByActivityId } from '../apis/activities'
 import { loginWithOTP, verifyOTP } from '../apis/auth'
 import { updateMood, getMoodByUserId } from '../apis/moods'
 import { fillUserName } from '../apis/profiles'
+import { fetchParticipantsByActivityId } from '../apis/activities_participants'
+import { sendCanceledActivityNotification, sendUpdatedActivityNotification, sendStartingActivityNotification, sendQuitActivityNotification } from '../apis/notifications'
 
 export default function Test() {
   const [testResult, setTestResult] = useState(null)
@@ -52,14 +54,19 @@ export default function Test() {
         // const updatedMood = await updateMood('36231020-693c-4ccc-810c-8cc7f7c4135e', 'Bored')
         // const fetchedMood = await getMoodByUserId('36231020-693c-4cbc-810c-8cc7f7c4135e')
         // const signUpResponse = await signUp('luoyukai2@gmail.com', 'password123')
-        const fillNameResponse = await fillUserName('KIKI', 'Luo')
+        // const fillNameResponse = await fillUserName('KIKI', 'Luo')
+        // const fetchedParticipants = await fetchParticipantsByActivityId('166f0208-39f7-495f-8455-7451a0d4cc54')
+        // const canceledNotification = await sendStartingActivityNotification(fetchedParticipants, '166f0208-39f7-495f-8455-7451a0d4cc54')
+        const creatorId = await fetchCreatorByActivityId('166f0208-39f7-495f-8455-7451a0d4cc54')
+        const quitNotification = await sendQuitActivityNotification(creatorId, '166f0208-39f7-495f-8455-7451a0d4cc54', '55f3e3a3-a9da-4cba-b95a-cbb7374e0b59')
+
 
         response = {
           status: 200,
-          data: fillNameResponse,
+          data: quitNotification,
           timestamp: new Date().toISOString()
         }
-        setTestResult(fillNameResponse)
+        setTestResult(quitNotification)
       } catch (err) {
         response = {
           status: err.status || 500,
