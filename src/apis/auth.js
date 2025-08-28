@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import * as AuthService from '../service/auth.service'
 
 /**
  * 发送邮箱 OTP 验证码
@@ -170,13 +171,49 @@ export async function fillUserName(firstName = '', lastName = '') {
 }
 
 export async function fetchCurrentUser() {
-  const { data, error } = await supabase.auth.getUser();
+  return AuthService.fetchCurrentUser();
+}
 
-  if (error) {
-    console.error('fetch current user failed:', error);
-    throw error;
+/**
+ * 已登录用户修改自己的密码
+ * @param {string} newPassword 新密码
+ * @param {object} [opts]
+ * @param {boolean} [opts.reauth=false] 是否先用当前邮箱/密码再登录一次以“再认证”,忘记密码为false，修改密码为true
+ * @param {string}  [opts.email]  再认证用的邮箱
+ * @param {string}  [opts.currentPassword] 再认证用的当前密码
+ * @returns {Promise<string>} 'success' 表示密码重置成功
+ */
+export async function resetPassword(newPassword, opts = {}) {
+  if (!newPassword || newPassword.length < 6) {
+    throw new Error('The new password must be at least 6 characters long');
   }
 
-  return data?.user ?? null;
+  if (opts.reauth) {
+    await AuthService.verifyOldPassword({ email: opts.email, oldPassword: opts.currentPassword });
+  }
+
+  await AuthService.changePassword(newPassword);
+
+  await AuthService.signOutGlobally();
+
+  return 'success';
 }
-  
+
+
+/**
+ * 发送密码重置邮件
+ *
+ * @async
+ * @function sendResetEmail
+ * @param {string} email - 需要重置密码的用户邮箱地址
+ * @throws {Error} 当邮箱参数为空时抛出错误
+ * @throws {Error} 当发送重置邮件失败时抛出错误（来自 AuthService）
+ * @returns {Promise<string>} 'success' 表示密码重置邮件发送成功
+ */
+export async function sendResetEmail(email) {
+  if (!email) throw new Error('请提供邮箱')
+
+  await AuthService.sendResetEmail(email);
+
+  return 'success';
+}

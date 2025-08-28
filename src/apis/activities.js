@@ -1,4 +1,6 @@
 import { supabase } from "../supabaseClient";
+import * as ActivitiesService from "../service/activities.service"
+
 /**
  * 按“分类名字”获取活动列表（支持分页与总数统计），并联表返回 creator / category / photos。
  *
@@ -98,3 +100,17 @@ export async function fetchCreatorByActivityId(activityId) {
 
   return data?.creator_id || null;
 }
+
+export async function searchActivities(query, page = 1, pageSize = 10) {
+  const fetchedActivitiesDetails = await ActivitiesService.fetchActivitiesDetailsByQuery(query, page, pageSize);
+
+  const participantsNumbers = await ActivitiesService.fetchParticipantsNumbers(fetchedActivitiesDetails);
+
+  const mergedDetails = ActivitiesService.mergeActivitiesSearchDetails({
+    fetchedActivitiesDetails,
+    participantsNumbers
+  });
+
+  return mergedDetails;
+}
+

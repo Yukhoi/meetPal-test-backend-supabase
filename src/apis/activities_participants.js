@@ -58,8 +58,6 @@ const fetchParticipantsByActivityId = async (activityId) => {
     return [];
   }
 
-  console.log('data:', data);
-
   const participants = data.map(participant => (participant.user_id));
 
   return participants;

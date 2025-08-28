@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { getNearbyUsers, updateUserLocation } from '../apis/userLocations'
 import { supabase } from '../supabaseClient'
-import { fetchActivitiesByCategoryName, fetchCreatorByActivityId } from '../apis/activities'
-import { loginWithOTP, verifyOTP } from '../apis/auth'
+import { fetchActivitiesByCategoryName, fetchCreatorByActivityId, searchActivities } from '../apis/activities'
+import { loginWithOTP, verifyOTP, sendResetEmail, resetPassword } from '../apis/auth'
 import { updateMood, getMoodByUserId } from '../apis/moods'
 import { fillUserName } from '../apis/profiles'
 import { fetchParticipantsByActivityId } from '../apis/activities_participants'
 import { sendCanceledActivityNotification, sendUpdatedActivityNotification, sendStartingActivityNotification, sendQuitActivityNotification } from '../apis/notifications'
+import { searchUser } from '../apis/profile_details'
 
 export default function Test() {
   const [testResult, setTestResult] = useState(null)
@@ -57,16 +58,19 @@ export default function Test() {
         // const fillNameResponse = await fillUserName('KIKI', 'Luo')
         // const fetchedParticipants = await fetchParticipantsByActivityId('166f0208-39f7-495f-8455-7451a0d4cc54')
         // const canceledNotification = await sendStartingActivityNotification(fetchedParticipants, '166f0208-39f7-495f-8455-7451a0d4cc54')
-        const creatorId = await fetchCreatorByActivityId('166f0208-39f7-495f-8455-7451a0d4cc54')
-        const quitNotification = await sendQuitActivityNotification(creatorId, '166f0208-39f7-495f-8455-7451a0d4cc54', '55f3e3a3-a9da-4cba-b95a-cbb7374e0b59')
-
+        // const creatorId = await fetchCreatorByActivityId('166f0208-39f7-495f-8455-7451a0d4cc54')
+        // const quitNotification = await sendQuitActivityNotification(creatorId, '166f0208-39f7-495f-8455-7451a0d4cc54', '55f3e3a3-a9da-4cba-b95a-cbb7374e0b59')
+        // const searchResults = await searchUser('g')
+        // const searchResults = await searchActivities('g', 1, 10)
+        // const resetEmailResponse = await sendResetEmail('yukai_luo@yahoo.com')
+        const resetPasswordResponse = await resetPassword('654321', { reauth: true, email: 'yukai_luo@yahoo.com', currentPassword: '123456' })
 
         response = {
           status: 200,
-          data: quitNotification,
+          data: resetPasswordResponse,
           timestamp: new Date().toISOString()
         }
-        setTestResult(quitNotification)
+        setTestResult(resetPasswordResponse)
       } catch (err) {
         response = {
           status: err.status || 500,
