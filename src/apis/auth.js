@@ -188,14 +188,19 @@ export async function resetPassword(newPassword, opts = {}) {
     throw new Error('The new password must be at least 6 characters long');
   }
 
-  if (opts.reauth) {
-    await AuthService.verifyOldPassword({ email: opts.email, oldPassword: opts.currentPassword });
+  try{
+    if (opts.reauth) {
+      await AuthService.verifyOldPassword({ email: opts.email, oldPassword: opts.currentPassword });
+    }
+
+    await AuthService.changePassword(newPassword);
+
+    await AuthService.signOutGlobally();
+
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    throw error;
   }
-
-  await AuthService.changePassword(newPassword);
-
-  await AuthService.signOutGlobally();
-
   return 'success';
 }
 

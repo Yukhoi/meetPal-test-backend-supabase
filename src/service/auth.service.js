@@ -15,7 +15,12 @@ export async function verifyOldPassword(params) {
 }
 
 export async function changePassword(newPassword) {
-  await AuthRepository.changePassword(newPassword);
+  try {
+    await AuthRepository.changePassword(newPassword);
+  } catch (error) {
+    console.error('Error changing password:', error);
+    throw error;
+  }
 }
 
 export async function signOutGlobally() {

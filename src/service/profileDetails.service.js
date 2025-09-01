@@ -45,3 +45,16 @@ export function mergeSearchResults(params) {
     };
   });
 }
+
+export function mergeFirstPageResults(params) {
+
+  const { profileDetails, avatarUrls } = params;
+
+  return profileDetails.data.map(profile => {
+    const avatar = avatarUrls.find(url => url.id === profile.profile_id);
+    return {
+      ...profile,
+      avatarUrl: avatar?.avatarUrl,
+    };
+  });
+}

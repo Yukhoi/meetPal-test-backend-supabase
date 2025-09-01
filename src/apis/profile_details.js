@@ -117,4 +117,23 @@ export async function searchUser(query, page = 1, pageSize = 10) {
   return mergedDetails;
 }
 
+export async function getUserList(page = 1, pagesize = 10) {
+
+  const currentUser = await AuthService.fetchCurrentUser();
+
+  const userIds = await ProfilesService.fetchAllIds(page, pagesize, currentUser.id);
+
+  const profileDetails = await ProfileDetailsService.fetchProfileDetailsByIdsForSearch(userIds, page, pagesize);
+
+  const avatarUrls = await ProfilesService.fetchUserAvatarURLbyIds(userIds);
+
+  const mergedDetails = ProfileDetailsService.mergeFirstPageResults({
+    profileDetails,
+    avatarUrls
+  });
+
+  return mergedDetails;
+
+}
+
 export { getProfileDetails };

@@ -25,17 +25,15 @@ export async function verifyPassword(email, password) {
   return data;
 }
 
-export async function changePassword(email, newPassword) {
+export async function changePassword(newPassword) {
   const { data, error } = await supabase.auth.updateUser({
-    email,
     password: newPassword
   });
 
   if (error) {
-    console.error('Error changing password:', error);
-    return null;
+    throw new Error('Error changing password:', error);
   }
-
+  
   return data;
 }
 
@@ -53,7 +51,7 @@ export async function signOutGlobally() {
 export async function sendResetEmail(email) {
 
   const { error } = await supabase.auth.resetPasswordForEmail(email);
-  
+
   if (error) {
     console.error('Error sending reset email:', error);
     return null;

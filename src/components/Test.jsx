@@ -7,7 +7,7 @@ import { updateMood, getMoodByUserId } from '../apis/moods'
 import { fillUserName } from '../apis/profiles'
 import { fetchParticipantsByActivityId } from '../apis/activities_participants'
 import { sendCanceledActivityNotification, sendUpdatedActivityNotification, sendStartingActivityNotification, sendQuitActivityNotification } from '../apis/notifications'
-import { searchUser } from '../apis/profile_details'
+import { searchUser, getUserList } from '../apis/profile_details'
 
 export default function Test() {
   const [testResult, setTestResult] = useState(null)
@@ -51,7 +51,7 @@ export default function Test() {
         // const updatedLocation = await updateUserLocation({ lat: 31, lng: 121, accuracyM: 50, sharing: true })
         // const fetchedActivities = await fetchActivitiesByCategoryName('Food & Dining')
         // const otp = await loginWithOTP('yukai_luo@yahoo.com')
-        // const verifiedOtp = await verifyOTP('yukai_luo@yahoo.com', '827387')
+        // const verifiedOtp = await verifyOTP('yukai_luo@yahoo.com', '008325')
         // const updatedMood = await updateMood('36231020-693c-4ccc-810c-8cc7f7c4135e', 'Bored')
         // const fetchedMood = await getMoodByUserId('36231020-693c-4cbc-810c-8cc7f7c4135e')
         // const signUpResponse = await signUp('luoyukai2@gmail.com', 'password123')
@@ -62,15 +62,16 @@ export default function Test() {
         // const quitNotification = await sendQuitActivityNotification(creatorId, '166f0208-39f7-495f-8455-7451a0d4cc54', '55f3e3a3-a9da-4cba-b95a-cbb7374e0b59')
         // const searchResults = await searchUser('g')
         // const searchResults = await searchActivities('g', 1, 10)
-        // const resetEmailResponse = await sendResetEmail('yukai_luo@yahoo.com')
-        const resetPasswordResponse = await resetPassword('654321', { reauth: true, email: 'yukai_luo@yahoo.com', currentPassword: '123456' })
-
+        // const resetPasswordResponse = await sendResetEmail('yukai_luo@yahoo.com')
+        // const resetPasswordResponse = await resetPassword('654321', { reauth: false, email: 'yukai_luo@yahoo.com', currentPassword: '123456' })
+        const userList = await getUserList();
+        
         response = {
           status: 200,
-          data: resetPasswordResponse,
+          data: userList,
           timestamp: new Date().toISOString()
         }
-        setTestResult(resetPasswordResponse)
+        setTestResult(userList)
       } catch (err) {
         response = {
           status: err.status || 500,
