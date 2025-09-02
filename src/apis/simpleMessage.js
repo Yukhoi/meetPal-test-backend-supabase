@@ -31,9 +31,13 @@ export async function sendTextMessage(contactId, content) {
     throw new SimpleMessageError('Fail to send message: missing required parameters');
   }
 
-  const currentUserId = authService.getCurrentUserId();
+  console.log('Sending text message to contactId:', contactId, 'with content:', content);
 
-  if (!currentUserId) {
+  const currentUser = await authService.fetchCurrentUser();
+
+  console.log('Current user ID:', currentUser.id);
+
+  if (!currentUser.id) {
     throw new SimpleMessageError('Fail to send message: user not authenticated');
   }
 
@@ -51,7 +55,7 @@ export async function sendTextMessage(contactId, content) {
     imageUrl: msg.image_url,
     isRead: msg.is_read,
     createdAt: msg.created_at,
-    isOwnMessage: msg.sender_id === currentUserId,
+    isOwnMessage: msg.sender_id === currentUser.id,
     senderProfile: msg.profiles ?? null
   };
 }

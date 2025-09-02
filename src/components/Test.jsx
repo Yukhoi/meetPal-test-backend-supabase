@@ -8,6 +8,7 @@ import { fillUserName } from '../apis/profiles'
 import { fetchParticipantsByActivityId } from '../apis/activities_participants'
 import { sendCanceledActivityNotification, sendUpdatedActivityNotification, sendStartingActivityNotification, sendQuitActivityNotification } from '../apis/notifications'
 import { searchUser, getUserList } from '../apis/profile_details'
+import { sendTextMessage, sendImageMessage } from '../apis/simpleMessage'
 
 export default function Test() {
   const [testResult, setTestResult] = useState(null)
@@ -64,14 +65,15 @@ export default function Test() {
         // const searchResults = await searchActivities('g', 1, 10)
         // const resetPasswordResponse = await sendResetEmail('yukai_luo@yahoo.com')
         // const resetPasswordResponse = await resetPassword('654321', { reauth: false, email: 'yukai_luo@yahoo.com', currentPassword: '123456' })
-        const userList = await getUserList();
+        // const userList = await getUserList();
+        const textMessage = await sendTextMessage('a1bc7c76-3f9b-49e8-b780-28aa87003b35', 'Hello, this is a test message!')
         
         response = {
           status: 200,
-          data: userList,
+          data: textMessage,
           timestamp: new Date().toISOString()
         }
-        setTestResult(userList)
+        setTestResult(textMessage )
       } catch (err) {
         response = {
           status: err.status || 500,

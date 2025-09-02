@@ -6,17 +6,17 @@ export async function sendTextMessage(params){
 
   const { data, error } = await supabase
   .from('simple_messages')
-  .insert([{
+  .insert({
     receiver_id: contactId,
-    content: content.trim(),
+    content: content,
     message_type: 'text',
     image_url: null
-  }])
-  .select(`
-    id, sender_id, receiver_id, content, message_type, image_url, is_read, created_at,
-    profiles!simple_messages_sender_id_fkey ( username, full_name, avatar_url )
-  `)
-  .single();
+  })
+  // .select(`
+  //   id, sender_id, receiver_id, content, message_type, image_url, is_read, created_at,
+  //   profiles!simple_messages_sender_id_fkey ( first_name, avatar_url )
+  // `)
+  // .single();
 
   if (error){
     const friendlyReminder =
@@ -25,6 +25,16 @@ export async function sendTextMessage(params){
         : `Failed to send message: ${error.message}`;
     throw new SimpleMessageError(friendlyReminder);
   }
+
+  // B. 立刻查询最新一条（看是否真的落库）
+const { data: last, error: qErr } = await supabase
+  .from('simple_messages')
+  .select('id, sender_id, receiver_id, content, created_at')
+  .eq('receiver_id', contactId)
+  .order('created_at', { ascending: false })
+  .limit(1);
+
+console.log('last=', last, 'qErr=', qErr);
 
   return data;
 
