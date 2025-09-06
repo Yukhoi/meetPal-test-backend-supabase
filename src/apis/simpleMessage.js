@@ -31,11 +31,7 @@ export async function sendTextMessage(contactId, content) {
     throw new SimpleMessageError('Fail to send message: missing required parameters');
   }
 
-  console.log('Sending text message to contactId:', contactId, 'with content:', content);
-
   const currentUser = await authService.fetchCurrentUser();
-
-  console.log('Current user ID:', currentUser.id);
 
   if (!currentUser.id) {
     throw new SimpleMessageError('Fail to send message: user not authenticated');
@@ -60,20 +56,46 @@ export async function sendTextMessage(contactId, content) {
   };
 }
 
-export async function sendImageMessage(contactId, imageUrl, caption=null) {
-  if (!imageUrl || !contactId) {
+/**
+ * 发送图片消息
+ * 
+ * 向指定联系人发送一条包含图片的消息。支持可选的图片说明文字。
+ * 此函数会验证用户身份并上传图片，然后发送包含图片URL的消息。
+ *
+ * @async
+ * @function sendImageMessage
+ * @param {string} contactId - 接收消息的联系人ID
+ * @param {string} imageUri - 图片的URI或路径。可以是本地文件路径或远程URL
+ * @param {string} [caption=null] - 可选的图片说明文字
+ * @throws {SimpleMessageError} 当缺少必要参数时抛出错误
+ * @throws {SimpleMessageError} 当用户未认证时抛出错误
+ * @returns {Promise<Object>} 返回格式化的消息对象
+ * @property {string} id - 消息唯一标识符
+ * @property {string} content - 消息内容（包含caption）
+ * @property {string} senderId - 发送者ID
+ * @property {string} receiverId - 接收者ID
+ * @property {string} messageType - 消息类型（图片类型）
+ * @property {string} imageUrl - 图片的访问URL
+ * @property {boolean} isRead - 消息是否已读
+ * @property {string} createdAt - 消息创建时间
+ * @property {boolean} isOwnMessage - 是否是当前用户发送的消息
+ * @property {Object|null} senderProfile - 发送者的个人资料信息
+ * 
+ */
+export async function sendImageMessage(contactId, imageUri, caption=null) {
+  if (!imageUri || !contactId) {
     throw new SimpleMessageError('Fail to send message: missing required parameters');
   }
 
-  const currentUserId = authService.getCurrentUserId();
+  const currentUser = await authService.fetchCurrentUser();
 
-  if (!currentUserId) {
+  if (!currentUser.id) {
     throw new SimpleMessageError('Fail to send message: user not authenticated');
   }
 
   const msg = await simpleMessageService.sendImageMessage({
     contactId,
-    imageUrl,
+    imageUri,
     caption,
   });
 
@@ -86,7 +108,7 @@ export async function sendImageMessage(contactId, imageUrl, caption=null) {
     imageUrl: msg.image_url,
     isRead: msg.is_read,
     createdAt: msg.created_at,
-    isOwnMessage: msg.sender_id === currentUserId,
+    isOwnMessage: msg.sender_id === currentUser.id,
     senderProfile: msg.profiles ?? null
   };
 }

@@ -8,3 +8,8 @@ export async function fetchParticipantsByActivityId(activityId) {
 
   return participants;
 };
+
+export async function isValidParticipant(activityId, userId) {
+  const participants = await fetchParticipantsByActivityId(activityId);
+  return participants.includes(userId);
+}

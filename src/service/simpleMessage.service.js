@@ -7,13 +7,13 @@ export async function sendTextMessage(params){
 }
 
 export async function sendImageMessage(params){
-  const { contactId, imageUrl, caption, currentUserId } = params;
+  const { contactId, imageUri, caption, currentUserId } = params;
 
   const fileName = `${currentUserId}/${Date.now()}-chat-image.jpg`;
 
   const formData = new FormData();
   formData.append('file', {
-    uri: imageUrl,
+    uri: imageUri,
     type: 'image/jpeg',
     name: 'chat-image.jpg',
   });

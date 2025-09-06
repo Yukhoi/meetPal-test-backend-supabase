@@ -27,37 +27,11 @@ import * as ActivitiesService from "../service/activities.service"
  * - total：依赖 { count: 'exact' }，是所有页合计的数量，不仅仅是当前页。
  * - hasMore：基于当前页返回条数、page 与 total 计算得出。
  */
-export async function fetchActivitiesByCategoryName(categoryName, pageSize = 20, page = 0) {
-  // 基本的参数兜底与分页区间计算
-  const size = Math.max(1, Number(pageSize) || 20);
-  const currentPage = Math.max(0, Number(page) || 0);
-  const from = currentPage * size;
-  const to   = from + size - 1;
+export async function fetchActivitiesByCategoryName(categoryName, pageSize = 20, page = 0, in24h = false) {
 
-  const { data, error, count } = await supabase
-    .from('activities')
-    .select(
-      `
-      *,
-      creator:profiles(*),                 
-      category:activity_categories!inner(id,name),
-      photos:activity_photos(*)            
-      `,
-      { count: 'exact' }                   // 同时返回总数 total
-    )
-    .eq('category.name', categoryName)     // 关键：用上面起的别名 category 按分类名过滤
-    .eq('status', 'planned')               // 只取计划中的活动；想要全部可删除本行
-    .order('created_at', { ascending: false })
-    .range(from, to);                      // 分页（包含端点）
+  const result = await ActivitiesService.fetchActivitiesByCategoryName(categoryName, pageSize, page, in24h);
 
-  if (error) {
-    console.error('按分类获取活动失败:', error);
-    throw error;
-  }
-
-  const total = count || 0;
-  const pageCount = total === 0 ? 0 : Math.ceil(total / size);
-  const hasMore = (data?.length || 0) === size && currentPage < pageCount - 1;
+  const { data, total, hasMore, currentPage, size } = result;
 
   return {
     activities: data || [],

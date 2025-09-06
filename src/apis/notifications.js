@@ -1,5 +1,6 @@
 import { supabase } from "../supabaseClient";
-
+import { NotificationError } from "../exceptions/NotificationError";
+import * as NotificationsService from '../service/notifications.service';
 /**
  * 批量发送“活动已取消”通知到指定用户。
  *
@@ -175,7 +176,6 @@ export async function sendStartingActivityNotification(recipientUserIds, activit
 
   const content = "This activity is about to start.";
 
-
   const rows = recipients.map((uid) => ({
     user_id: uid,                      // 接收者
     type: 'activity_update',           // 或 'system' / 'activity_cancel'（如你有该类型）
@@ -236,8 +236,6 @@ export async function sendStartingActivityNotification(recipientUserIds, activit
  */
 export async function sendQuitActivityNotification(creatorUserId, activityId, participantUserId) {
 
-  console.log('creatorUserId:', creatorUserId, 'activityId:', activityId, 'participantUserId:', participantUserId);
-
   if (!creatorUserId) {
     console.warn('No recipients to notify.');
     return [];
@@ -262,5 +260,35 @@ export async function sendQuitActivityNotification(creatorUserId, activityId, pa
     throw new Error(error.message);
   }
 
+  return 'success';
+}
+
+/**
+ * 向关注者发送"被关注用户创建了新活动"的通知
+ * 
+ * 此函数会：
+ * 1. 验证必要参数
+ * 2. 获取创建者的所有关注者
+ * 3. 向这些关注者发送新活动通知
+ *
+ * @async
+ * @function sendFollowingCreatedActivityNotification
+ * @param {string | number} creatorUserId - 创建活动的用户ID（被关注者）
+ * @param {string | number} activityId - 新创建的活动ID
+ * @returns {Promise<'success'>} 当成功发送所有通知时返回 'success'
+ * @throws {NotificationError} 当缺少必要参数时抛出错误
+ * @throws {Error} 当通知发送失败时可能抛出其他错误
+ * 
+ */
+export async function sendFollowingCreatedActivityNotification(creatorUserId, activityId) {
+  if (!creatorUserId) {
+    throw new NotificationError('Creator user ID is required to send notifications.');
+  }
+
+  if(!activityId) {
+    throw new NotificationError('Activity ID is required to send notifications.');
+  }
+
+  await NotificationsService.sendFollowingCreatedActivityNotification(creatorUserId, activityId);
   return 'success';
 }

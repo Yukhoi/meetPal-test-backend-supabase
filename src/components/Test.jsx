@@ -6,9 +6,13 @@ import { loginWithOTP, verifyOTP, sendResetEmail, resetPassword } from '../apis/
 import { updateMood, getMoodByUserId } from '../apis/moods'
 import { fillUserName } from '../apis/profiles'
 import { fetchParticipantsByActivityId } from '../apis/activities_participants'
-import { sendCanceledActivityNotification, sendUpdatedActivityNotification, sendStartingActivityNotification, sendQuitActivityNotification } from '../apis/notifications'
+import { sendCanceledActivityNotification, sendUpdatedActivityNotification, sendStartingActivityNotification, sendQuitActivityNotification, sendFollowingCreatedActivityNotification } from '../apis/notifications'
 import { searchUser, getUserList } from '../apis/profile_details'
 import { sendTextMessage, sendImageMessage } from '../apis/simpleMessage'
+import { signUp } from '../apis/auth'
+import { addActivityFeedback } from '../apis/activitiesFeedback'
+import { sendContactSupportMessage } from '../apis/contactSupport'
+import { sendDeleteAccountRequest } from '../apis/deleteAccountRequest'
 
 export default function Test() {
   const [testResult, setTestResult] = useState(null)
@@ -50,7 +54,7 @@ export default function Test() {
         // const unlikeCommentResponse = await unlikeComment('ae580470-635b-4064-b80b-fa27d8819c54')
         // const nearbyUsers = await getNearbyUsers({ lng: 121, lat: 31, radiusM: 50000, maxCount: 100 })
         // const updatedLocation = await updateUserLocation({ lat: 31, lng: 121, accuracyM: 50, sharing: true })
-        // const fetchedActivities = await fetchActivitiesByCategoryName('Food & Dining')
+        // const fetchedActivities = await fetchActivitiesByCategoryName('Food & Dining', 10, 0)
         // const otp = await loginWithOTP('yukai_luo@yahoo.com')
         // const verifiedOtp = await verifyOTP('yukai_luo@yahoo.com', '008325')
         // const updatedMood = await updateMood('36231020-693c-4ccc-810c-8cc7f7c4135e', 'Bored')
@@ -66,14 +70,19 @@ export default function Test() {
         // const resetPasswordResponse = await sendResetEmail('yukai_luo@yahoo.com')
         // const resetPasswordResponse = await resetPassword('654321', { reauth: false, email: 'yukai_luo@yahoo.com', currentPassword: '123456' })
         // const userList = await getUserList();
-        const textMessage = await sendTextMessage('a1bc7c76-3f9b-49e8-b780-28aa87003b35', 'Hello, this is a test message!')
-        
+        // const textMessage = await sendTextMessage('ffd6d262-67b2-4c51-a840-dc8dca03a2cd', 'Hello, this is a test message!')
+        // const imageMessage = await sendImageMessage('ffd6d262-67b2-4c51-a840-dc8dca03a2cd', 'https://mkmhxpicrdsoxjwgfyjn.supabase.co/storage/v1/object/public/chat-images/55f3e3a3-a9da-4cba-b95a-cbb7374e0b59/1753366855135-chat-image.jpg', 'Check out this image!')
+        // const createdActivityNotification = await sendFollowingCreatedActivityNotification('a1bc7c76-3f9b-49e8-b780-28aa87003b35', '05aa177a-277b-4c43-8979-d5695dc1565f')
+        // const activityFeedback = await addActivityFeedback('166f0208-39f7-495f-8455-7451a0d4cc54', 'f9eae89e-9060-4146-addb-c83069746126', { overall: "positive", went_well:[], went_wrong:[], comments: "Great activity, had a lot of fun!" })
+        // const contactSupportResponse = await sendContactSupportMessage('This is a test message to contact support.')
+        const deleteAccountResponse = await sendDeleteAccountRequest();
+
         response = {
           status: 200,
-          data: textMessage,
+          data: deleteAccountResponse,
           timestamp: new Date().toISOString()
         }
-        setTestResult(textMessage )
+        setTestResult(deleteAccountResponse)
       } catch (err) {
         response = {
           status: err.status || 500,
